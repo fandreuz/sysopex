@@ -1,0 +1,8 @@
+dmd_modes.npy
+forecated_pod_coefficients.npy
+interpolated_pod_coefficients.npy
+result_error.npy
+spacemu_time.npy
+spatial_pod_coefficients.npy
+swapped_pod_coefficients.npy
+la jdpsjfosdifcosincsoidnclisndjkskdjcnjsncjkd,nscksncjkndjsd
