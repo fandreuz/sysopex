@@ -12,6 +12,8 @@ int main() {
         printf("%d\n", a3[i]);
     }
 
+    free(a3);
+
     exit(0);
 }
 
