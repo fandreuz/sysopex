@@ -51,6 +51,29 @@ int main() {
         printf("%d\n", numbers[i]);
     }
 
+    printf("======== WRITE ==========\n");
+
+    int fd2 = open("numeri_ordinati.txt", O_CREAT | O_TRUNC | O_RDWR, S_IRUSR | S_IWUSR);
+    if (fd2 == -1) {
+        perror("open");
+        exit(1);
+    }
+
+    char *buffer = calloc(100, sizeof(char));
+    for (int i = 0; i < numbers_idx; i++) {
+        int bytes_written = sprintf(buffer, "%d\n", numbers[i]);
+        if (bytes_written <= 0) {
+            perror("sprintf");
+            exit(1);
+        }
+
+        bytes_written = write(fd2, buffer, bytes_written);
+        if (bytes_written <= 0) {
+            perror("write");
+            exit(1);
+        }
+    }
+
     exit(0);
 }
 
