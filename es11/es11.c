@@ -4,6 +4,9 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+void insertion_sort(double *array, int size);
+double *insert_into_array(double *array, int array_len, double val, int insert_position);
+
 int main(int argc, char** argv) {
     if (argc != 3) {
         argv[1] = "10";
@@ -33,15 +36,17 @@ int main(int argc, char** argv) {
 
     char buffer[100];
     double loadavg[3];
-    float averages_sum = 0;
+    double averages[numero_cicli];
+    double averages_sum = 0;
 
     for (int i = 0; i < numero_cicli; i++)
     {
         getloadavg(loadavg, 3);
 
+        averages[i] = loadavg[0];
         averages_sum += loadavg[0];
 
-        int printed_number = sprintf(buffer, "%f\n", loadavg[0]);
+        int printed_number = sprintf(buffer, "%lf\n", loadavg[0]);
         if (printed_number <= 0) {
             perror("sprintf");
             exit(1);
@@ -60,8 +65,8 @@ int main(int argc, char** argv) {
     int pid = fork();
     if (pid == 0) {
         // figlio
-        float result = averages_sum / numero_cicli;
-        printf("Average: %f\n", result);
+        double result = averages_sum / (double) numero_cicli;
+        printf("Average: %lf\n", result);
 
         int result_fd = open("result.txt", O_TRUNC | O_CREAT | O_WRONLY, S_IRUSR | S_IWUSR);
         if (result_fd == -1) {
@@ -70,7 +75,7 @@ int main(int argc, char** argv) {
         }
 
         char result_buffer[100];
-        int sres = sprintf(result_buffer, "%f\n", result);
+        int sres = sprintf(result_buffer, "%lf\n", result);
         if (sres < 1) {
             perror("sprintf");
             exit(1);
@@ -111,6 +116,27 @@ int main(int argc, char** argv) {
         }
 
         printf("child ha scritto %f\n", written_average);
+
+        double *new_array;
+
+        // ordina i valori
+        insertion_sort(averages, numero_cicli);
+        for (int i = 0; i < numero_cicli; i++) {
+            if (averages[i] > written_average) {
+                new_array = insert_into_array(averages, numero_cicli, written_average, i);
+                break;
+            }
+
+            if (i == numero_cicli - 1) {
+                new_array = insert_into_array(averages, numero_cicli, written_average, numero_cicli);
+            }
+        }
+
+        printf(" =============== nuovo array\n");
+        for (int i = 0; i < numero_cicli + 1; i++)
+        {
+            printf("new_array[%d] = %lf\n", i, new_array[i]);
+        }
     }
     else
     {
@@ -119,4 +145,40 @@ int main(int argc, char** argv) {
     }
 
     return 0;
+}
+
+void insertion_sort(double* array, int size) {
+    printf("\nordina:\n");
+    for (int i = 0; i < size; i++) {
+        printf("array[%d] = %lf\n", i, array[i]);
+    }
+
+    for (int i = 1; i < size; i++) {
+        for (int j = i - 1; j >= 0; j--) {
+            if (array[j+1] < array[j]) {
+                double temp = array[j];
+                array[j] = array[j + 1];
+                array[j + 1] = temp;
+            } else {
+                break;
+            }
+        }
+    }
+}
+
+double * insert_into_array(double * array, int array_len, double val, int insert_position) {
+    if (insert_position < 0 || insert_position > array_len) {
+        return NULL;
+    }
+
+    double *new_array = calloc(array_len+1, sizeof(double));
+    for (int i = 0, old_array_idx = 0; i < array_len + 1; i++) {
+        if (i == insert_position) {
+            new_array[i] = val;
+        } else {
+            new_array[i] = array[old_array_idx++];
+        }
+    }
+
+    return new_array;
 }
