@@ -95,10 +95,10 @@ void lettura(int fd)
         "more", "timesharing", "ports",
         "than", "all", "other", "systems",
         "combined", NULL};
-    token = strtok(words_to_check, s);
     for (int k = 0; k < 14; k++)
     { //14 è il numero di parole in word_to_check
         int pid = fork();
+        token = strtok(words_to_check[k], s);
         token = strtok(NULL, s);
         if (token != NULL)
         {
