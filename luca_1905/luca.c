@@ -24,12 +24,12 @@ void child_process()
     char buffer[12];
     for (int i = 0; i < N; i++)
     {
-        lseek(fd, 0, SEEK_SET);
         if (pthread_mutex_lock(&mtx) != 0)
         {
             perror("pthread_mutex_lock");
             exit(1);
         }
+        lseek(fd, 0, SEEK_SET);
         var_cond = rand();
         strlen = sprintf(buffer, "%d", var_cond);
         if (write(fd, buffer, strlen) == -1)
@@ -58,7 +58,6 @@ void parent_process()
     char buffer[12];
     while (1)
     {
-        lseek(fd, 0, SEEK_SET);
         if (sem_wait(semaphore) != 0)
         {
             perror("sem_post");
@@ -69,6 +68,7 @@ void parent_process()
             perror("pthread_mutex_lock");
             exit(1);
         }
+        lseek(fd, 0, SEEK_SET);
         if (read(fd, &buffer, buffer_len) == -1)
         {
             perror("read()");
